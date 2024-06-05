@@ -1,4 +1,5 @@
 # Amazon OpenSearch Service와 Amazon Bedrock과 함께 하는 검색의 진화
+
 "Amazon OpenSearch Service와 Amazon Bedrock와 함께하는 검색의 진화" 워크샵에 오신 것을 환영합니다. 이 워크샵은 Amazon OpenSearch Service와 Amazon Bedrock을 활용하여 다양한 검색 기법을 구현하는 것을 목표로 설계되었습니다.
 
 이 워크샵에서 구현해볼 시스템의 아키텍처는 다음과 같습니다.
