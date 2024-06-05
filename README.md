@@ -3,7 +3,7 @@
 
 이 워크샵에서 구현해볼 시스템의 아키텍처는 다음과 같습니다.
 
-![workshop architecture](images/image.png)
+![workshop architecture](docs/images/image.png)
 
 이 워크샵에서 사용하는 서비스와 기술은 다음과 같습니다. 
 
