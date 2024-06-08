@@ -62,7 +62,7 @@ Parameters:
 
 Mappings: 
   RegionMap: 
-    us-east-1:
+    us-west-2:
       HVM64: ami-041feb57c611358bd
     us-west-2:
       HVM64: ami-07d07d65c47e5aa90
