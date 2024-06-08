@@ -44,10 +44,6 @@ Parameters:
     NoEcho: 'true'
     Type: String
     Default: Passw0rd!
-  OpenSearchIndexName:
-    Default: llm_apps_workshop_embeddings
-    Type: String    
-    Description: Name of the OpenSearch index for storing embeddings.
   AppName:
     Default: opensearch-gen-ai
     Type: String
@@ -86,7 +82,7 @@ Resources:
     Type: AWS::SageMaker::CodeRepository
     Properties:
       GitConfig:
-        RepositoryUrl: https://github.com/atheanchu/opensearch-workshop-kor
+        RepositoryUrl: https://github.com/atheanchu/opensearch-with-bedrock-workshop-kr
 
   NotebookInstance:
     Type: AWS::SageMaker::NotebookInstance
@@ -159,26 +155,6 @@ Resources:
               - sagemaker.amazonaws.com
             Action:
               - 'sts:AssumeRole'
-  LambdaIAMRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Action:
-              - "sts:AssumeRole"
-            Effect: "Allow"
-            Principal:
-              Service:
-                - "lambda.amazonaws.com"
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-        - arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess
-        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
-        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
-        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
-      RoleName: "LambdaRoleForEncoders"
 
   Role:
     Type: AWS::IAM::Role
@@ -241,29 +217,6 @@ Resources:
             Action:
               - 'sts:AssumeRole'
 
-  s3BucketTraining:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: "AES256"
-      VersioningConfiguration:
-        Status: Enabled
-
-  s3BucketHosting:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: "AES256"
-      VersioningConfiguration:
-        Status: Enabled
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: error.html
-
   OpenSearchServiceDomain:
     Type: AWS::OpenSearchService::Domain
     Properties:
@@ -322,23 +275,6 @@ Outputs:
   Region:
     Description: Deployed Region
     Value: !Ref AWS::Region
-
-  s3BucketTraining:
-    Description: S3 bucket name for training
-    Value: !Ref s3BucketTraining
-
-  s3BucketHostingBucketName:
-    Description: S3 bucket name for frontend hosting
-    Value: !Ref s3BucketHosting
-
-  S3BucketSecureURL:
-    Value: !Join
-      - ''
-      - - 'https://'
-        - !GetAtt
-          - s3BucketHosting
-          - DomainName
-    Description: Name of S3 bucket to hold website content
 
   SageMakerNotebookURL:
     Description: SageMaker Notebook Instance
