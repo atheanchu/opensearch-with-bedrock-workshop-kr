@@ -135,6 +135,15 @@ Resources:
                   - "ssm:*"
                 Resource:
                   - "*"
+        - PolicyName: AmazonOpenSearchServerlessFullAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "aoss:*"
+                Resource:
+                  - "*"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess
         - arn:aws:iam::aws:policy/TranslateReadOnly
