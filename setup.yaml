@@ -63,8 +63,8 @@ Parameters:
 Mappings: 
   RegionMap: 
     us-west-2:
-      HVM64: ami-041feb57c611358bd
-    us-west-2:
+      HVM64: ami-05e491ac3791032d1
+    us-east-1:
       HVM64: ami-07d07d65c47e5aa90
     eu-west-1:
       HVM64: ami-0b9fd8b55a6e3c9d5
@@ -251,6 +251,15 @@ Resources:
       DomainEndpointOptions:
         EnforceHTTPS: True
 
+  s3BucketKnowledgeBase:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+      VersioningConfiguration:
+        Status: Enabled
 
 
 Outputs:
@@ -288,3 +297,6 @@ Outputs:
     Description: Name of the OpenSearch secret in Secrets Manager
     Value: !Ref OpenSearchSecret
 
+  s3BucketKnowledgeBase:
+    Description: S3 bucket name for Bedrock Agent Knowledge Base
+    Value: !Ref s3BucketKnowledgeBase
