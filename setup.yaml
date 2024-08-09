@@ -259,6 +259,83 @@ Resources:
         KmsKeyId: alias/aws/es
       DomainEndpointOptions:
         EnforceHTTPS: True
+        
+  NoriPackageAssociationLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+
+          nori_pkg_id = {}
+          nori_pkg_id['us-east-1'] = {
+              '2.3': 'G196105221',
+              '2.5': 'G240285063',
+              '2.7': 'G16029449', 
+              '2.9': 'G60209291',
+              '2.11': 'G181660338',
+              '2.13': 'G225840180'
+          }
+
+          nori_pkg_id['us-west-2'] = {
+              '2.3': 'G94047474',
+              '2.5': 'G138227316',
+              '2.7': 'G182407158', 
+              '2.9': 'G226587000',
+              '2.11': 'G79602591',
+              '2.13': 'G123782433'
+          }
+
+          def lambda_handler(event, context):
+              print(event)
+              print('context: {}'.format(context))
+              responseStatus = cfnresponse.SUCCESS
+              responseData = {}
+              
+              if event['RequestType'] == 'Create':
+                  try:
+                      region = event['ResourceProperties']['Region']
+                      domain_name = event['ResourceProperties']['DomainName']
+                      version = event['ResourceProperties']['EngineVersion'].split('_')[1]
+                      
+                      opensearch = boto3.client('opensearch')
+                      pkg_response = opensearch.associate_package(
+                          PackageID=nori_pkg_id[region][version],
+                          DomainName=domain_name
+                      )
+                      responseData['PackageAssociationMessage'] = 'Package Installed'
+                  except Exception as e:
+                      responseStatus = cfnresponse.FAILED
+                      responseData = {'Error': str(e)}
+              
+              cfnresponse.send(event, context, responseStatus, responseData, 'CustomResourceNori')
+
+      Handler: index.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt NoriPackageAssociationLambdaRole.Arn
+
+  NoriPackageAssociationLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess
+
+  NoriPackageAssociation:
+    Type: Custom::NoriPackageAssociation
+    Properties:
+      ServiceToken: !GetAtt NoriPackageAssociationLambdaFunction.Arn
+      Region: !Ref AWS::Region
+      DomainName: !Ref OpenSearchServiceDomain
+      EngineVersion: !Ref OpenSearchEngineVersion
 
   s3BucketKnowledgeBase:
     Type: AWS::S3::Bucket
