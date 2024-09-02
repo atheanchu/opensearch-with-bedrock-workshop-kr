@@ -59,6 +59,10 @@ Parameters:
     Description: Name of IAM role that will be created by this cloud formation template. The role name must _not_ already exist in your AWS account.
     Type: String
     Default: "LLMAppsIAMRole"  
+  OpenSearchEngineVersion:
+    Description: Engine Version of OpenSearch Domain
+    Type: String
+    Default: 'OpenSearch_2.13'
 
 Mappings: 
   RegionMap: 
@@ -162,6 +166,7 @@ Resources:
             Principal:
               Service:
               - sagemaker.amazonaws.com
+              - es.amazonaws.com
             Action:
               - 'sts:AssumeRole'
 
@@ -238,7 +243,7 @@ Resources:
               AWS: '*'
             Action: 'es:*'
             Resource: !Sub arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/*/*
-      EngineVersion: 'OpenSearch_2.11'
+      EngineVersion: !Sub ${OpenSearchEngineVersion}
       ClusterConfig:
         InstanceType: "r6g.2xlarge.search"
       EBSOptions:
@@ -259,7 +264,6 @@ Resources:
         KmsKeyId: alias/aws/es
       DomainEndpointOptions:
         EnforceHTTPS: True
-        
   NoriPackageAssociationLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
